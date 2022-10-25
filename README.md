@@ -18,3 +18,5 @@ Springboot, Gradle, Spring Data Jpa, Java17, MySQL
 ## 프로젝트 ERD
 
 [AQueryTool 링크](https://aquerytool.com/aquerymain/index/?rurl=7b62ae09-7e53-4715-8286-62b9568240c8)
+
+![test coverage](.github/badges/jacoco.svg)
