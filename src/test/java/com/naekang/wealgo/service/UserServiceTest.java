@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 
 import com.naekang.wealgo.domain.User;
 import com.naekang.wealgo.dto.SignUpRequestDTO;
+import com.naekang.wealgo.exception.CustomException;
+import com.naekang.wealgo.exception.ErrorCode;
 import com.naekang.wealgo.repository.UserRepository;
 import com.naekang.wealgo.type.UserRole;
 import java.util.Optional;
@@ -36,7 +38,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원 가입 성공")
-    void signup_Success() throws Exception {
+    void signup_Success() {
         //given
         SignUpRequestDTO signUpRequestDTO = SignUpRequestDTO.builder()
             .email("rlawlsgh6306@gmail.com")
@@ -83,11 +85,12 @@ class UserServiceTest {
                 .build()));
 
         //when
-        Exception exception = assertThrows(Exception.class,
+        CustomException exception = assertThrows(CustomException.class,
             () -> userService.signUp(signUpRequestDTO));
 
         //then
-        assertEquals("이미 존재하는 이메일입니다.", exception.getMessage());
+        assertEquals(ErrorCode.DUPLICATED_EMAIL.getMessage(),
+            exception.getErrorCode().getMessage());
     }
 
     @Test
@@ -105,11 +108,12 @@ class UserServiceTest {
             .willReturn(Optional.empty());
 
         //when
-        Exception exception = assertThrows(Exception.class,
+        CustomException exception = assertThrows(CustomException.class,
             () -> userService.signUp(signUpRequestDTO));
 
         //then
-        assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
+        assertEquals(ErrorCode.NOT_MATCH_PASSWORD.getMessage(),
+            exception.getErrorCode().getMessage());
     }
 
 }

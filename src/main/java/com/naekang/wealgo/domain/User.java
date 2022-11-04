@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Entity(name = "USER")
+@Entity(name = "USERS")
 @Getter
 @Builder
 @ToString
