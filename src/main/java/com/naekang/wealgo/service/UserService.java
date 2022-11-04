@@ -1,8 +1,12 @@
 package com.naekang.wealgo.service;
 
+import com.naekang.wealgo.domain.User;
 import com.naekang.wealgo.domain.UserProblemStats;
+import com.naekang.wealgo.dto.SignUpRequestDTO;
 import com.naekang.wealgo.repository.UserProblemStatsRepository;
+import com.naekang.wealgo.repository.UserRepository;
 import com.naekang.wealgo.type.ProblemLevel;
+import com.naekang.wealgo.type.UserRole;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
@@ -24,7 +29,31 @@ import org.springframework.util.StopWatch;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     private final UserProblemStatsRepository userProblemStatsRepository;
+
+    @Transactional
+    public String signUp(SignUpRequestDTO signUpRequestDTO) throws Exception {
+        if (userRepository.findByEmail(signUpRequestDTO.getEmail()).isPresent()) {
+            throw new Exception("이미 존재하는 이메일입니다.");
+        }
+
+        if (!signUpRequestDTO.getPassword().equals(signUpRequestDTO.getCheckedPassword())) {
+            throw new Exception("비밀번호가 일치하지 않습니다.");
+        }
+
+        User newUser = User.builder()
+            .email(signUpRequestDTO.getEmail())
+            .username(signUpRequestDTO.getUsername())
+            .password(passwordEncoder.encode(signUpRequestDTO.getPassword()))
+            .role(UserRole.USER)
+            .build();
+
+        userRepository.save(newUser);
+
+        return newUser.getEmail();
+    }
 
     @Scheduled(cron = "0 0 23 * * *")
     @Transactional
