@@ -18,7 +18,7 @@ public class UserController {
 
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
-    public String singUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) throws Exception {
+    public String singUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
         return userService.signUp(signUpRequestDTO);
     }
 

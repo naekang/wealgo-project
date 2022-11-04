@@ -3,6 +3,8 @@ package com.naekang.wealgo.service;
 import com.naekang.wealgo.domain.User;
 import com.naekang.wealgo.domain.UserProblemStats;
 import com.naekang.wealgo.dto.SignUpRequestDTO;
+import com.naekang.wealgo.exception.CustomException;
+import com.naekang.wealgo.exception.ErrorCode;
 import com.naekang.wealgo.repository.UserProblemStatsRepository;
 import com.naekang.wealgo.repository.UserRepository;
 import com.naekang.wealgo.type.ProblemLevel;
@@ -34,13 +36,13 @@ public class UserService {
     private final UserProblemStatsRepository userProblemStatsRepository;
 
     @Transactional
-    public String signUp(SignUpRequestDTO signUpRequestDTO) throws Exception {
+    public String signUp(SignUpRequestDTO signUpRequestDTO) {
         if (userRepository.findByEmail(signUpRequestDTO.getEmail()).isPresent()) {
-            throw new Exception("이미 존재하는 이메일입니다.");
+            throw new CustomException("이미 가입된 회원입니다.", ErrorCode.DUPLICATED_EMAIL);
         }
 
         if (!signUpRequestDTO.getPassword().equals(signUpRequestDTO.getCheckedPassword())) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new CustomException("입력된 비밀번호가 일치하지 않습니다.", ErrorCode.NOT_MATCH_PASSWORD);
         }
 
         User newUser = User.builder()
