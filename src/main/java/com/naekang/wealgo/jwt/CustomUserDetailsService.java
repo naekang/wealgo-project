@@ -1,9 +1,9 @@
 package com.naekang.wealgo.jwt;
 
-import com.naekang.wealgo.domain.CustomUserDetails;
+import com.naekang.wealgo.domain.auth.entity.CustomUserDetails;
+import com.naekang.wealgo.domain.auth.repository.UserRepository;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
-import com.naekang.wealgo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
