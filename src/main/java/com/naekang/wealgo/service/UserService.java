@@ -2,9 +2,13 @@ package com.naekang.wealgo.service;
 
 import com.naekang.wealgo.domain.User;
 import com.naekang.wealgo.domain.UserProblemStats;
+import com.naekang.wealgo.dto.LoginRequestDTO;
+import com.naekang.wealgo.dto.LoginResponseDTO;
 import com.naekang.wealgo.dto.SignUpRequestDTO;
+import com.naekang.wealgo.dto.SignUpResponseDTO;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
+import com.naekang.wealgo.jwt.JwtTokenProvider;
 import com.naekang.wealgo.repository.UserProblemStatsRepository;
 import com.naekang.wealgo.repository.UserRepository;
 import com.naekang.wealgo.type.ProblemLevel;
@@ -13,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +38,12 @@ import org.springframework.util.StopWatch;
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final UserProblemStatsRepository userProblemStatsRepository;
 
     @Transactional
-    public String signUp(SignUpRequestDTO signUpRequestDTO) {
+    public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
         if (userRepository.findByEmail(signUpRequestDTO.getEmail()).isPresent()) {
             throw new CustomException("이미 가입된 회원입니다.", ErrorCode.DUPLICATED_EMAIL);
         }
@@ -54,7 +61,29 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return newUser.getEmail();
+        return SignUpResponseDTO.builder()
+            .username(newUser.getUsername())
+            .build();
+    }
+
+    @Transactional
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+        User user = userRepository.findByEmail(loginRequestDTO.getEmail())
+            .orElseThrow(() -> new CustomException("존재하지 않는 사용자입니다.", ErrorCode.USER_NOT_FOUND));
+
+        if (!user.checkPassword(passwordEncoder, loginRequestDTO.getPassword())) {
+            throw new CustomException("비밀번호가 일치하지 않습니다.", ErrorCode.NOT_MATCH_PASSWORD);
+        }
+
+        List<String> roles = new ArrayList<>();
+        roles.add(user.getRole().name());
+
+        return LoginResponseDTO.builder()
+            .userId(user.getId())
+            .email(user.getEmail())
+            .username(user.getUsername())
+            .jwtToken(jwtTokenProvider.createToken(user.getEmail(), roles))
+            .build();
     }
 
     @Scheduled(cron = "0 0 23 * * *")
@@ -120,5 +149,6 @@ public class UserService {
             return "Failed to get response";
         }
     }
+
 
 }
