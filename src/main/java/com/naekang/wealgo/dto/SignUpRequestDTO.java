@@ -1,6 +1,7 @@
 package com.naekang.wealgo.dto;
 
 import com.naekang.wealgo.type.UserRole;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpRequestDTO {
 
+    @Email(message = "이메일 형식이 맞지 않습니다.")
     @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
 

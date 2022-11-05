@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import com.naekang.wealgo.domain.User;
 import com.naekang.wealgo.dto.SignUpRequestDTO;
+import com.naekang.wealgo.dto.SignUpResponseDTO;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
 import com.naekang.wealgo.repository.UserRepository;
@@ -61,11 +62,11 @@ class UserServiceTest {
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
         //when
-        String signupEmail = userService.signUp(signUpRequestDTO);
+        SignUpResponseDTO response = userService.signUp(signUpRequestDTO);
 
         //then
         verify(userRepository, times(1)).save(captor.capture());
-        assertEquals(signUpRequestDTO.getEmail(), signupEmail);
+        assertEquals(signUpRequestDTO.getUsername(), response.getUsername());
     }
 
     @Test

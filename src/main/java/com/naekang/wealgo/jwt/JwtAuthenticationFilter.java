@@ -15,11 +15,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
         FilterChain filterChain) throws ServletException, IOException {
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) req);
+        String token = jwtTokenProvider.resolveToken(req);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
