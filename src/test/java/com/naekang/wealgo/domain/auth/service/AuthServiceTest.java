@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import com.naekang.wealgo.domain.auth.dto.request.SignUpRequestDTO;
 import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
-import com.naekang.wealgo.domain.auth.repository.UserRepository;
+import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
@@ -29,7 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class AuthServiceTest {
 
     @Mock
-    private UserRepository userRepository;
+    private AuthRepository authRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -48,10 +48,10 @@ class AuthServiceTest {
             .checkedPassword("1234qwer!")
             .build();
 
-        given(userRepository.findByEmail(anyString()))
+        given(authRepository.findByEmail(anyString()))
             .willReturn(Optional.empty());
 
-        given(userRepository.save(any()))
+        given(authRepository.save(any()))
             .willReturn(User.builder()
                 .email("rlawlsgh6306@gmail.com")
                 .username("naekang")
@@ -65,7 +65,7 @@ class AuthServiceTest {
         SignUpResponseDTO response = authService.signUp(signUpRequestDTO);
 
         //then
-        verify(userRepository, times(1)).save(captor.capture());
+        verify(authRepository, times(1)).save(captor.capture());
         assertEquals(signUpRequestDTO.getUsername(), response.getUsername());
     }
 
@@ -80,7 +80,7 @@ class AuthServiceTest {
             .checkedPassword("1234qwer!")
             .build();
 
-        given(userRepository.findByEmail(anyString()))
+        given(authRepository.findByEmail(anyString()))
             .willReturn(Optional.of(User.builder()
                 .email("rlawlsgh6306@gmail.com")
                 .build()));
@@ -105,7 +105,7 @@ class AuthServiceTest {
             .checkedPassword("1234asdf!")
             .build();
 
-        given(userRepository.findByEmail(anyString()))
+        given(authRepository.findByEmail(anyString()))
             .willReturn(Optional.empty());
 
         //when
