@@ -1,5 +1,6 @@
 package com.naekang.wealgo.domain.auth.controller;
 
+import com.naekang.wealgo.domain.auth.dto.request.ChangePwRequestDTO;
 import com.naekang.wealgo.domain.auth.dto.request.LoginRequestDTO;
 import com.naekang.wealgo.domain.auth.dto.request.SignUpRequestDTO;
 import com.naekang.wealgo.domain.auth.dto.response.LoginResponseDTO;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,12 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         return authService.login(loginRequestDTO);
+    }
+
+    @PostMapping("/change/password")
+    public String changePassword(@Valid @RequestBody ChangePwRequestDTO changePwRequestDTO,
+        @RequestHeader("Authorization") String token) {
+        return authService.changePassword(changePwRequestDTO, token);
     }
 
 }
