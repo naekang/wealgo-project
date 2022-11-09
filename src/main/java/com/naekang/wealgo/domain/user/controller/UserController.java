@@ -1,7 +1,11 @@
 package com.naekang.wealgo.domain.user.controller;
 
+import com.naekang.wealgo.domain.user.dto.GetUserInfosResDTO;
 import com.naekang.wealgo.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -9,5 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<GetUserInfosResDTO> getUserByUsername(@PathVariable String username) {
+
+        return ResponseEntity.ok(userService.getUserInfosByUsername(username));
+    }
 
 }

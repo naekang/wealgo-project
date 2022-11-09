@@ -1,8 +1,8 @@
 package com.naekang.wealgo.util.scraper;
 
+import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
-import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

@@ -37,6 +37,7 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true, name = "SOLVED_AC_USERNAME")
     private String username;
 
     private String password;
@@ -44,7 +45,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id")
     private UserDetailInfo userDetailInfo;
 
