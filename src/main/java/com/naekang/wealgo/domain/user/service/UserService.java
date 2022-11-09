@@ -1,47 +1,52 @@
 package com.naekang.wealgo.domain.user.service;
 
 import com.naekang.wealgo.annotation.Timer;
+import com.naekang.wealgo.domain.user.dto.UserProblemStatsDTO;
 import com.naekang.wealgo.domain.user.entity.UserProblemStats;
 import com.naekang.wealgo.domain.user.repository.UserProblemStatsRepository;
 import com.naekang.wealgo.domain.user.type.ProblemLevel;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final String apiUrl = "https://solved.ac/api/v3/user/problem_stats?handle=naekang";
+
     private final UserProblemStatsRepository userProblemStatsRepository;
 
-    @Scheduled(cron = "0 0 23 * * *")
+    @Scheduled(cron = "0 0 10 * * *")
     @Transactional
     @Timer
-    public void saveUserProblemStats() throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONArray jsonArray = (JSONArray) parser.parse(getString());
+    public void saveUserProblemStats() {
+        RestTemplate template = new RestTemplate();
 
-        for (int i = 0; i < 31; i++) {
+        ResponseEntity<List<UserProblemStatsDTO>> response = template.exchange(apiUrl,
+            HttpMethod.GET, null,
+            new ParameterizedTypeReference<>() {
+            });
 
-            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+        List<UserProblemStatsDTO> list = response.getBody();
+
+        for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
+            UserProblemStatsDTO problemStatsDTO = list.get(i);
 
             UserProblemStats userProblemStats = UserProblemStats.builder()
-                .level(ProblemLevel.idxToLevel(i))
-                .totalProblem(Integer.parseInt(jsonObject.get("total").toString()))
-                .solvedProblem(Integer.parseInt(jsonObject.get("solved").toString()))
-                .exp(Integer.parseInt(jsonObject.get("exp").toString()))
+                .level(ProblemLevel.idxToLevel(problemStatsDTO.getLevel()))
+                .solvedProblem(problemStatsDTO.getSolved())
+                .exp(problemStatsDTO.getExp())
                 .build();
 
             Optional<UserProblemStats> findObject = userProblemStatsRepository.findById(
@@ -52,38 +57,6 @@ public class UserService {
             }
 
             userProblemStatsRepository.save(userProblemStats);
-        }
-    }
-
-    private String getString() {
-        String apiUrl = "https://solved.ac/api/v3/user/problem_stats?handle=naekang";
-
-        try {
-            URL url = new URL(apiUrl);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-
-            BufferedReader br;
-
-            if (responseCode == 200) {
-                br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            } else {
-                br = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-            }
-
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = br.readLine()) != null) {
-                response.append(inputLine);
-            }
-            br.close();
-
-            return response.toString();
-        } catch (Exception e) {
-            return "Failed to get response";
         }
     }
 

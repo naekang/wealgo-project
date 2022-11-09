@@ -26,7 +26,8 @@ public class ExecutionTimeAop {
 
         stopWatch.stop();
 
-        log.info("{} TOTAL_TIME: " + stopWatch.getTotalTimeSeconds() + "sec", joinPoint.getSignature().toShortString());
+        log.info("{} TOTAL_TIME: " + stopWatch.getTotalTimeSeconds() + "sec",
+            joinPoint.getSignature().toShortString());
 
         return result;
     }
