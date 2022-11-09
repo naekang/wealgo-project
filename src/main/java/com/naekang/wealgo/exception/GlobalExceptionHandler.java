@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @RestControllerAdvice
@@ -30,7 +31,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e
+    ) {
         log.error("MethodArgumentNotValidException is occurred: {}", Objects.requireNonNull(
                 e.getFieldError())
             .getDefaultMessage());
@@ -43,4 +45,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleHttpClientErrorException(
+        HttpClientErrorException e
+    ) {
+        log.error("HttpClientErrorException is occured: {}", e.getMessage());
+
+        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_REQUEST_URL);
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }

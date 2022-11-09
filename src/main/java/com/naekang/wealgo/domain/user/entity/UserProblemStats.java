@@ -22,16 +22,13 @@ public class UserProblemStats {
 
     private String level;
 
-    private int totalProblem;
-
     private int solvedProblem;
 
     private int exp;
 
     @Builder
-    public UserProblemStats(String level, int totalProblem, int solvedProblem, int exp) {
+    public UserProblemStats(String level, int solvedProblem, int exp) {
         this.level = level;
-        this.totalProblem = totalProblem;
         this.solvedProblem = solvedProblem;
         this.exp = exp;
     }
@@ -44,14 +41,13 @@ public class UserProblemStats {
         if (!(o instanceof UserProblemStats that)) {
             return false;
         }
-        return getTotalProblem() == that.getTotalProblem()
-            && getSolvedProblem() == that.getSolvedProblem() && getExp() == that.getExp()
+        return getSolvedProblem() == that.getSolvedProblem() && getExp() == that.getExp()
             && Objects.equals(getLevel(), that.getLevel());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getLevel(), getTotalProblem(), getSolvedProblem(), getExp());
+        return Objects.hash(getLevel(), getSolvedProblem(), getExp());
     }
 
 }

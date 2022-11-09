@@ -13,8 +13,11 @@ import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
+import com.naekang.wealgo.domain.user.entity.UserDetailInfo;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
+import com.naekang.wealgo.util.scraper.BaekjoonUserScraper;
+import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,9 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private BaekjoonUserScraper baekjoonUserScraper;
+
     @InjectMocks
     private AuthService authService;
 
@@ -48,6 +54,17 @@ class AuthServiceTest {
             .checkedPassword("1234qwer!")
             .build();
 
+        UserDetailInfo userDetailInfo = UserDetailInfo.builder()
+            .solvedCount(1)
+            .solvedNumber("1")
+            .build();
+
+        given(baekjoonUserScraper.getSolvedProblem(anyString()))
+            .willReturn(UserScraperDTO.builder()
+                .solvedCount(userDetailInfo.getSolvedCount())
+                .solvedList(userDetailInfo.getSolvedNumber())
+                .build());
+
         given(authRepository.findByEmail(anyString()))
             .willReturn(Optional.empty());
 
@@ -56,6 +73,7 @@ class AuthServiceTest {
                 .email("rlawlsgh6306@gmail.com")
                 .username("naekang")
                 .password("1234qwer!")
+                .userDetailInfo(userDetailInfo)
                 .role(UserRole.USER)
                 .build());
 

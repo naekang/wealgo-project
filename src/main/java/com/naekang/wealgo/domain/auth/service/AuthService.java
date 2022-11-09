@@ -9,9 +9,12 @@ import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
+import com.naekang.wealgo.domain.user.entity.UserDetailInfo;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
 import com.naekang.wealgo.jwt.JwtTokenProvider;
+import com.naekang.wealgo.util.scraper.BaekjoonUserScraper;
+import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthRepository authRepository;
+    private final BaekjoonUserScraper baekjoonUserScraper;
 
     @Timer
     @Transactional
@@ -40,11 +44,18 @@ public class AuthService {
             throw new CustomException("입력된 비밀번호가 일치하지 않습니다.", ErrorCode.NOT_MATCH_PASSWORD);
         }
 
+        UserScraperDTO solvedProblem = baekjoonUserScraper.getSolvedProblem(
+            signUpRequestDTO.getUsername());
+
         User newUser = User.builder()
             .email(signUpRequestDTO.getEmail())
             .username(signUpRequestDTO.getUsername())
             .password(passwordEncoder.encode(signUpRequestDTO.getPassword()))
             .role(UserRole.USER)
+            .userDetailInfo(UserDetailInfo.builder()
+                .solvedCount(solvedProblem.getSolvedCount())
+                .solvedNumber(solvedProblem.getSolvedList())
+                .build())
             .build();
 
         authRepository.save(newUser);
