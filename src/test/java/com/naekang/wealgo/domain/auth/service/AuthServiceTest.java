@@ -13,11 +13,11 @@ import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
+import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import com.naekang.wealgo.domain.user.entity.UserDetailInfo;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
 import com.naekang.wealgo.util.scraper.BaekjoonUserScraper;
-import com.naekang.wealgo.domain.user.dto.UserScraperDTO;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,6 +110,30 @@ class AuthServiceTest {
         //then
         assertEquals(ErrorCode.DUPLICATED_EMAIL.getMessage(),
             exception.getErrorCode().getMessage());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패_중복된 닉네임이 있을 경우")
+    void signup_ExceptionThrown_DuplicatedUsername() {
+        //given
+        SignUpRequestDTO signUpRequestDTO = SignUpRequestDTO.builder()
+            .email("rlawlsgh6306@gmail.com")
+            .username("naekang")
+            .password("1234qwer!")
+            .checkedPassword("1234qwer!")
+            .build();
+
+        given(authRepository.findByUsername(anyString()))
+            .willReturn(Optional.of(User.builder()
+                .username("naekang")
+                .build()));
+
+        //when
+        CustomException exception = assertThrows(CustomException.class,
+            () -> authService.signUp(signUpRequestDTO));
+
+        //then
+        assertEquals(ErrorCode.DUPLICATED_USERNAME, exception.getErrorCode());
     }
 
     @Test

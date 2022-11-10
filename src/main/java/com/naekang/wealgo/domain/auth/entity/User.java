@@ -37,6 +37,7 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true, name = "SOLVED_AC_USERNAME")
     private String username;
 
     private String password;
