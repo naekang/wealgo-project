@@ -1,4 +1,4 @@
-package com.naekang.wealgo.domain.auth.dto.request;
+package com.naekang.wealgo.domain.auth.controller.request;
 
 import com.naekang.wealgo.domain.auth.type.UserRole;
 import javax.validation.constraints.Email;

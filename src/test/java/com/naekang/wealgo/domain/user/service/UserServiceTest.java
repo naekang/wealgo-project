@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
-import com.naekang.wealgo.domain.user.controller.response.GetUserInfosResponseDTO;
 import com.naekang.wealgo.domain.user.entity.UserDetailInfo;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;

@@ -2,6 +2,7 @@ package com.naekang.wealgo.domain.auth.dto.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.naekang.wealgo.domain.auth.controller.request.LoginRequestDTO;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;

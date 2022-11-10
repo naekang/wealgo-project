@@ -1,18 +1,18 @@
 package com.naekang.wealgo.domain.auth.controller;
 
-import com.naekang.wealgo.domain.auth.dto.request.ChangePwRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.request.LoginRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.request.SignUpRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.response.LoginResponseDTO;
-import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
+import com.naekang.wealgo.domain.auth.controller.request.ChangePwRequestDTO;
+import com.naekang.wealgo.domain.auth.controller.request.LoginRequestDTO;
+import com.naekang.wealgo.domain.auth.controller.request.SignUpRequestDTO;
+import com.naekang.wealgo.domain.auth.controller.response.LoginResponseDTO;
+import com.naekang.wealgo.domain.auth.controller.response.SignUpResponseDTO;
+import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.service.AuthService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,20 +22,28 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    @ResponseStatus(HttpStatus.CREATED)
-    public SignUpResponseDTO singUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
-        return authService.signUp(signUpRequestDTO);
+    public ResponseEntity<SignUpResponseDTO> singUp(
+        @Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+        User user = authService.signUp(signUpRequestDTO);
+
+        return ResponseEntity.ok(SignUpResponseDTO.fromUser(user));
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        return authService.login(loginRequestDTO);
+    public ResponseEntity<LoginResponseDTO> login(
+        @Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+
+        return ResponseEntity.ok(LoginResponseDTO.builder()
+            .jwtToken(authService.login(loginRequestDTO))
+            .build()
+        );
     }
 
     @PostMapping("/change/password")
-    public String changePassword(@Valid @RequestBody ChangePwRequestDTO changePwRequestDTO,
+    public ResponseEntity<String> changePassword(
+        @Valid @RequestBody ChangePwRequestDTO changePwRequestDTO,
         @RequestHeader("Authorization") String token) {
-        return authService.changePassword(changePwRequestDTO, token);
+        return ResponseEntity.ok(authService.changePassword(changePwRequestDTO, token));
     }
 
 }

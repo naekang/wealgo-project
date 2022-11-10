@@ -1,11 +1,9 @@
 package com.naekang.wealgo.domain.auth.service;
 
 import com.naekang.wealgo.annotation.Timer;
-import com.naekang.wealgo.domain.auth.dto.request.ChangePwRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.request.LoginRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.request.SignUpRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.response.LoginResponseDTO;
-import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
+import com.naekang.wealgo.domain.auth.controller.request.ChangePwRequestDTO;
+import com.naekang.wealgo.domain.auth.controller.request.LoginRequestDTO;
+import com.naekang.wealgo.domain.auth.controller.request.SignUpRequestDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
@@ -35,7 +33,7 @@ public class AuthService {
 
     @Timer
     @Transactional
-    public SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO) {
+    public User signUp(SignUpRequestDTO signUpRequestDTO) {
         if (authRepository.findByEmail(signUpRequestDTO.getEmail()).isPresent()) {
             throw new CustomException("이미 가입된 회원입니다.", ErrorCode.DUPLICATED_EMAIL);
         }
@@ -64,14 +62,12 @@ public class AuthService {
 
         authRepository.save(newUser);
 
-        return SignUpResponseDTO.builder()
-            .username(newUser.getUsername())
-            .build();
+        return newUser;
     }
 
     @Timer
     @Transactional
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+    public String login(LoginRequestDTO loginRequestDTO) {
         User user = authRepository.findByEmail(loginRequestDTO.getEmail())
             .orElseThrow(() -> new CustomException("존재하지 않는 사용자입니다.", ErrorCode.USER_NOT_FOUND));
 
@@ -82,12 +78,7 @@ public class AuthService {
         List<String> roles = new ArrayList<>();
         roles.add(user.getRole().name());
 
-        return LoginResponseDTO.builder()
-            .userId(user.getId())
-            .email(user.getEmail())
-            .username(user.getUsername())
-            .jwtToken(jwtTokenProvider.createToken(user.getEmail(), roles))
-            .build();
+        return jwtTokenProvider.createToken(user.getEmail(), roles);
     }
 
     @Transactional
