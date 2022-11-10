@@ -1,4 +1,4 @@
-package com.naekang.wealgo.domain.auth.dto.request;
+package com.naekang.wealgo.domain.auth.controller.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
