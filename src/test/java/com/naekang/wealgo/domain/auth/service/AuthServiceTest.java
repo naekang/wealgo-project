@@ -8,8 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.naekang.wealgo.domain.auth.dto.request.SignUpRequestDTO;
-import com.naekang.wealgo.domain.auth.dto.response.SignUpResponseDTO;
+import com.naekang.wealgo.domain.auth.controller.request.SignUpRequestDTO;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
 import com.naekang.wealgo.domain.auth.type.UserRole;
@@ -80,11 +79,11 @@ class AuthServiceTest {
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
         //when
-        SignUpResponseDTO response = authService.signUp(signUpRequestDTO);
+        User user = authService.signUp(signUpRequestDTO);
 
         //then
         verify(authRepository, times(1)).save(captor.capture());
-        assertEquals(signUpRequestDTO.getUsername(), response.getUsername());
+        assertEquals(signUpRequestDTO.getUsername(), user.getUsername());
     }
 
     @Test

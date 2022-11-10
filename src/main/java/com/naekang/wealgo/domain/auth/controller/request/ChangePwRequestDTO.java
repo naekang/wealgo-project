@@ -1,4 +1,4 @@
-package com.naekang.wealgo.domain.auth.dto.request;
+package com.naekang.wealgo.domain.auth.controller.request;
 
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
