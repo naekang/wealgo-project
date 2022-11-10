@@ -3,14 +3,12 @@ package com.naekang.wealgo.domain.user.service;
 import com.naekang.wealgo.annotation.Timer;
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
-import com.naekang.wealgo.domain.user.dto.GetUserInfosResDTO;
 import com.naekang.wealgo.domain.user.dto.UserProblemStatsDTO;
 import com.naekang.wealgo.domain.user.entity.UserProblemStats;
 import com.naekang.wealgo.domain.user.repository.UserProblemStatsRepository;
 import com.naekang.wealgo.domain.user.type.ProblemLevel;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,23 +35,13 @@ public class UserService {
     private final UserProblemStatsRepository userProblemStatsRepository;
 
     @Transactional(readOnly = true)
-    public GetUserInfosResDTO getUserInfosByUsername(String username) {
+    public User getUserInfosByUsername(String username) {
         if (ObjectUtils.isEmpty(username)) {
             throw new CustomException("username은 필수입니다.", ErrorCode.INVALID_REQUEST);
         }
 
-        User findUser = authRepository.findByUsername(username)
+        return authRepository.findByUsername(username)
             .orElseThrow(() -> new CustomException("존재하지 않는 사용자입니다.", ErrorCode.USER_NOT_FOUND));
-
-        int[] solvedList = Arrays.stream(findUser.getUserDetailInfo().getSolvedNumber().split(", "))
-            .mapToInt(Integer::parseInt).toArray();
-
-        return GetUserInfosResDTO.builder()
-            .email(findUser.getEmail())
-            .username(findUser.getUsername())
-            .solvedCount(findUser.getUserDetailInfo().getSolvedCount())
-            .solvedList(solvedList)
-            .build();
     }
 
     @Scheduled(cron = "0 0 10 * * *")

@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.naekang.wealgo.domain.auth.entity.User;
 import com.naekang.wealgo.domain.auth.repository.AuthRepository;
-import com.naekang.wealgo.domain.user.dto.GetUserInfosResDTO;
+import com.naekang.wealgo.domain.user.controller.response.GetUserInfosResponseDTO;
 import com.naekang.wealgo.domain.user.entity.UserDetailInfo;
 import com.naekang.wealgo.exception.CustomException;
 import com.naekang.wealgo.exception.ErrorCode;
@@ -47,12 +47,12 @@ class UserServiceTest {
             .willReturn(Optional.of(user));
 
         //when
-        GetUserInfosResDTO response = userService.getUserInfosByUsername(
+        User findUser = userService.getUserInfosByUsername(
             user.getUsername());
 
         //then
-        assertEquals(user.getUsername(), response.getUsername());
-        assertEquals(2, response.getSolvedList().length);
+        assertEquals(user.getUsername(), findUser.getUsername());
+        assertEquals(2, findUser.getUserDetailInfo().getSolvedCount());
     }
 
     @Test

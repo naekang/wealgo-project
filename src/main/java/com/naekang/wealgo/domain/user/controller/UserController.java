@@ -1,6 +1,7 @@
 package com.naekang.wealgo.domain.user.controller;
 
-import com.naekang.wealgo.domain.user.dto.GetUserInfosResDTO;
+import com.naekang.wealgo.domain.auth.entity.User;
+import com.naekang.wealgo.domain.user.controller.response.GetUserInfosResponseDTO;
 import com.naekang.wealgo.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile/{username}")
-    public ResponseEntity<GetUserInfosResDTO> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<GetUserInfosResponseDTO> getUserByUsername(
+        @PathVariable String username) {
 
-        return ResponseEntity.ok(userService.getUserInfosByUsername(username));
+        User user = userService.getUserInfosByUsername(username);
+
+        return ResponseEntity.ok(GetUserInfosResponseDTO.fromUser(user));
     }
 
 }
