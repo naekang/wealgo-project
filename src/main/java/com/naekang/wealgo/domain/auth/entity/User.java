@@ -45,7 +45,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     private UserDetailInfo userDetailInfo;
 
